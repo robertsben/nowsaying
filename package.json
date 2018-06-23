@@ -8,6 +8,6 @@
     "start": "node src/server.js"
   },
   "dependencies": {
-    
+    "node-fetch": "^2.1.2"
   }
 }
