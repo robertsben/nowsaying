@@ -1,0 +1,13 @@
+{
+  "name": "nowsaying",
+  "version": "0.0.1",
+  "main": "src/server.js",
+  "repository": "https://github.com/robertsben/nowsaying",
+  "license": "MIT",
+  "scripts": {
+    "start": "node src/server.js"
+  },
+  "dependencies": {
+    
+  }
+}
