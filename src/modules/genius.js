@@ -6,16 +6,7 @@ const {JSDOM} = jsdom
 
 const geniusApi = `https://api.genius.com`
 
-const searchForLyrics = (term) => {
-  return fetch(`${geniusApi}/search?q=${encodeURIComponent(term)}`, {
-    method: 'GET',
-    headers: {
-      'Authorization': `Bearer ${config.GENIUS_ACCESS_TOKEN}`
-    }
-  })
-}
-
-const requestSong = (path) => {
+const requestFromGeniusApi = (path) => {
   return fetch(`${geniusApi}${path}`, {
     method: 'GET',
     headers: {
@@ -24,7 +15,11 @@ const requestSong = (path) => {
   })
 }
 
-const requestLyrics = (url) => {
+const searchForLyrics = (term) => {
+  return requestFromGeniusApi(`/search?q=${encodeURIComponent(term)}`)
+}
+
+const requestDirect = (url) => {
   return fetch(url, {method: 'GET'});
 }
 
@@ -35,13 +30,13 @@ const getSongUrl = (term) => {
 }
 
 const getSongLyricsUrl = (song_url) => {
-  return requestSong(song_url)
+  return requestFromGeniusApi(song_url)
     .then((resp) => resp.json())
     .then((json) => json.response.song.url)
 }
 
 const getLyrics = (lyrics_url) => {
-  return requestLyrics(lyrics_url)
+  return requestDirect(lyrics_url)
     .then((resp) => resp.text())
     .then((dom) => {
       const {document} = (new JSDOM(dom)).window;
