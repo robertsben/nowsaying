@@ -41,7 +41,6 @@ const requestAccessToken = () => {
 }
 
 const requestNowPlaying = (access_token) => {
-  console.log(access_token);
   return fetch(`${spotifyApi}${spotifyCurrentlyPlayingApi}`, {
     method: `GET`,
     headers: {

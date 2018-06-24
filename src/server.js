@@ -16,8 +16,17 @@ app.get('/return', (req, res) => {
     .then((json) => res.send(json))
 })
 
-app.get('/', (req, res) => {
+app.get('/callback/genius', (req, res) => {
+//  @TODO if necessary
+})
+
+app.get('/lyricmatches', (req, res) => {
+
+})
+
+app.get('/nowplaying', (req, res) => {
   spotify.getNowPlaying()
+    .catch((err) => res.status(500).send(`Error getting now playing: ${err}`))
     .then((nowPlaying) => res.send(nowPlaying))
 })
 
