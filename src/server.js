@@ -1,6 +1,7 @@
 const express = require('express');
 const url = require('url');
 const spotify = require('./modules/spotify');
+const genius = require('./modules/genius');
 const app = express();
 
 app.get('/login', (req, res) => {
@@ -21,7 +22,16 @@ app.get('/callback/genius', (req, res) => {
 })
 
 app.get('/lyricmatches', (req, res) => {
-
+  spotify.getNowPlaying()
+    .then((nowPlaying) => {
+      const songName = nowPlaying.item.name
+      const artist = nowPlaying.item.artists[0].name
+      const query = `${songName} ${artist}`
+      console.log(`Querying for: ${query}`)
+      return query
+    })
+    .then(genius.getLyricSnippet)
+    .then((lyrics) => res.send(lyrics))
 })
 
 app.get('/nowplaying', (req, res) => {
