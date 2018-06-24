@@ -61,10 +61,14 @@ app.get('/tweet', (req, res) => {
       return lyrics
     })
     .then(twitter.postTweet)
-    .then((resp) => {
-      // console.log(resp)
-      res.send(resp)
-    })
+    .then(resp => resp.json())
+    .then(json => res.send(json))
+})
+
+app.get('/tweetpoo', (req, res) => {
+  twitter.postTweet('something with spaces and...\n newlines')
+    .then(resp => resp.json())
+    .then(json => res.send(json))
 })
 
 app.listen(process.env.PORT, console.log(`Listening on port ${process.env.PORT}`));

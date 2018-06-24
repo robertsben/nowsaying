@@ -4,9 +4,9 @@ const config = require('../config')
 
 const TWEET_API = `https://api.twitter.com/1.1/statuses/update.json`
 
-const generateTwitterOAuth = (http_method, http_url, req_params, req_body) => {
+const generateTwitterOAuth = (http_method, http_url, req_params) => {
   let auth = `OAuth `
-  const oauthParams = getTwitterOAuthParams(http_method, http_url, req_params, req_body)
+  const oauthParams = getTwitterOAuthParams(http_method, http_url, req_params)
   Object.keys(oauthParams).forEach(function (key) {
     if (auth != `OAuth `) {
       auth += `, `
@@ -16,16 +16,16 @@ const generateTwitterOAuth = (http_method, http_url, req_params, req_body) => {
   return auth
 }
 
-const getTwitterOAuthParams = (http_method, http_url, req_params, req_body) => {
+const getTwitterOAuthParams = (http_method, http_url, req_params) => {
   const oauthParams = {
-    'oauth_consumer_key': config.SPOTIFY_CLIENT_ID,
+    'oauth_consumer_key': config.TWITTER_CLIENT_ID,
     'oauth_nonce': generateOAuthNonce(),
     'oauth_signature_method': 'HMAC-SHA1',
     'oauth_timestamp': Math.floor(Date.now() / 1000),
     'oauth_token': config.TWITTER_ACCESS_TOKEN,
     'oauth_version': '1.0'
   }
-  oauthParams['oauth_signature'] = generateOAuthSignature(http_method, http_url, req_params, req_body, oauthParams)
+  oauthParams['oauth_signature'] = generateOAuthSignature(http_method, http_url, req_params, oauthParams)
 
   const sortedOAuthParams = {}
   Object.keys(oauthParams).sort().forEach(function (key) {
@@ -67,11 +67,9 @@ const generateOAuthSignature = (
   http_method,
   http_url,
   req_parameters,
-  req_body,
   oauth_parameters
 ) => {
-  const allParams = {...req_parameters, ...req_body, ...oauth_parameters}
-  console.log(`All parameters for encoding: ${allParams}`)
+  const allParams = {...req_parameters, ...oauth_parameters}
   // encode
   const encodedParams = {}
   Object.keys(allParams).forEach(function(key) {
@@ -93,28 +91,20 @@ const generateOAuthSignature = (
   })
 
   const sig_base_string = `${http_method}&${encodeRFC5987ValueChars(http_url)}&${encodeRFC5987ValueChars(parameter_string)}`
-  console.log(`Signature base string: ${sig_base_string}`)
-
   const sig_signing_key = generateSigningKey()
-  return crypto.createHmac('sha1', sig_signing_key).update(sig_base_string).digest('base64')
+  return crypto.createHmac('SHA1', sig_signing_key).update(sig_base_string).digest('base64')
 }
 
 const postTweet = (tweet) => {
   const method = 'POST'
-  const oauth = generateTwitterOAuth(method, TWEET_API, {}, {'status': tweet})
-  const params = {'status': encodeURIComponent(tweet)}
+  const rawParams = {'status': tweet}
+  const oauth = generateTwitterOAuth(method, TWEET_API, rawParams, {})
 
-  let queryString = ``
-  Object.keys(params).forEach((key) => {
-    if (queryString != ``) {
-      queryString += `&`
-    }
-    queryString += `${key}=${params[key]}`
+  const params = new URLSearchParams()
+  Object.keys(rawParams).forEach(key => {
+    params.append(key, rawParams[key])
   })
 
-  console.log(`Making request to ${TWEET_API}`)
-  console.log(`With body: ${params}`)
-  console.log(`With auth: ${oauth}`)
   return fetch(`${TWEET_API}`, {
     'method': method,
     body: params,
