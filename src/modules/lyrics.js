@@ -14,7 +14,7 @@ const chooseRandomSnippet = (lyrics) => {
   const lineByLine = stringToLineByLine(lyrics)
   const numberOfLines = getRandomInt(MIN_LINE_LENGTH, MAX_LINE_LENGTH)
   const startingLineNumber = getRandomInt(0, lineByLine.length - numberOfLines)
-  return lineByLine.slice(startingLineNumber, startingLineNumber+numberOfLines)
+  return lineByLineToString(lineByLine.slice(startingLineNumber, startingLineNumber+numberOfLines))
 }
 
 const cleanLyrics = (lyrics) => {
