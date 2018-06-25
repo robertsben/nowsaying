@@ -21,7 +21,7 @@ const getLyricsFromNowPlaying = () => {
 }
 
 const tweetNowPlaying = () => {
-  getLyricsFromNowPlaying()
+  return getLyricsFromNowPlaying()
     .then((lyrics) => {
       console.log(`Found lyric snippet: ${lyrics}`)
       return lyrics
