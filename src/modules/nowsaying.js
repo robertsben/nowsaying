@@ -4,7 +4,7 @@ const twitter = require('./twitter')
 
 
 const getNowPlaying = () => {
-  spotify.getNowPlaying()
+  return spotify.getNowPlaying()
     .catch((err) => res.status(500).send(`Error getting now playing: ${err}`))
 }
 
