@@ -1,8 +1,14 @@
 const express = require('express');
 const url = require('url');
 const spotify = require('./modules/spotify');
-const nowsaying = require('./modules/nowsaying')
+const nowsaying = require('./modules/nowsaying');
 const app = express();
+
+app.set('view engine', 'ejs');
+
+app.get('/', (req, res) => {
+  res.render('home');
+})
 
 app.get('/login', (req, res) => {
   // used to get spotify credentials from oauth signin flow
