@@ -15,7 +15,8 @@ app.get('/', (req, res) => {
     .then(songArtist => { details = songArtist; return details; })
     .then(nowsaying.getLyricsFromSongArtist)
     .then(lyrics => res.render('home', {
-      owner: config.OWNER,
+      owner_handle: config.OWNER_HANDLE,
+      twitter_handle: config.TWITTER_HANDLE,
       lyrics: lyrics,
       songdetails: details
     }));
