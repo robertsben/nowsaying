@@ -7,5 +7,6 @@ services:
       - 4000:4000
     volumes:
       - ./src:/src/app/src
+      - ./views:/src/app/views
     env_file:
       - .env-dev

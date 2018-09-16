@@ -2,12 +2,21 @@ const express = require('express');
 const url = require('url');
 const spotify = require('./modules/spotify');
 const nowsaying = require('./modules/nowsaying');
+const config = require('./config');
 const app = express();
 
 app.set('view engine', 'ejs');
 
 app.get('/', (req, res) => {
-  res.render('home');
+  let details;
+  nowsaying.getNowPlayingSongArtist()
+    .then(songArtist => { details = songArtist; return details; })
+    .then(nowsaying.getLyricsFromSongArtist)
+    .then(lyrics => res.render('home', {
+      owner: config.OWNER,
+      lyrics: lyrics,
+      songdetails: details
+    }));
 })
 
 app.get('/login', (req, res) => {

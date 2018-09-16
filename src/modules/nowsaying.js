@@ -8,6 +8,22 @@ const getNowPlaying = () => {
     .catch((err) => res.status(500).send(`Error getting now playing: ${err}`))
 }
 
+const getNowPlayingSongArtist = () => {
+  return getNowPlaying()
+    .then(nowPlaying => {
+      const songName = nowPlaying.item.name
+      const artist = nowPlaying.item.artists[0].name
+      return {
+        song: songName,
+        artist: artist
+      }
+    })
+}
+
+const getLyricsFromSongArtist = (info) => {
+  return genius.getLyricSnippet(`${info.song} ${info.artist}`);
+}
+
 const getLyricsFromNowPlaying = () => {
   return getNowPlaying()
     .then((nowPlaying) => {
@@ -31,6 +47,8 @@ const tweetNowPlaying = () => {
 
 module.exports = {
   getNowPlaying: getNowPlaying,
+  getNowPlayingSongArtist: getNowPlayingSongArtist,
   getLyricsFromNowPlaying: getLyricsFromNowPlaying,
+  getLyricsFromSongArtist: getLyricsFromSongArtist,
   tweetNowPlaying: tweetNowPlaying
 }
