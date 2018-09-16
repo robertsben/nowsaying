@@ -1,9 +1,6 @@
 const path = require('path');
 const express = require('express');
 const bodyParser = require('body-parser');
-const multer = require('multer');
-const auth = require('basic-auth');
-const compare = require('tsscmp');
 const url = require('url');
 const spotify = require('./modules/spotify');
 const twitter = require('./modules/twitter');
@@ -11,19 +8,8 @@ const nowsaying = require('./modules/nowsaying');
 const config = require('./config');
 const app = express();
 
-// @see: https://github.com/jshttp/basic-auth
-const check = (user, pass) => {
-  var valid = true
-  // Simple method to prevent short-circut and use timing-safe compare
-  valid = compare(user, config.TWEET_AUTH_USER) && valid
-  valid = compare(pass, config.TWEET_AUTH_PASS) && valid
-
-  return valid
-}
-
 app.set('view engine', 'ejs');
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, '..', 'public')));
 
 let currentTweet;
@@ -87,11 +73,13 @@ app.route('/tweet')
       .then(json => res.send(json))
   })
   .post((req, res) => {
-    const credentials = auth(req);
-    if (!credentials || !check(credentials.name, credentials.pass)) {
-      res.status(401).send('Access denied')
+    if (!currentTweet) {
+      res.status(400).send('No lyrics selected')
     } else {
-      const tweet = req.body.tweet;
+      // it's a dirty, dirty hack, but I'm not implementing a login for this
+      const tweet = currentTweet;
+      currentTweet = undefined;
+      console.log(`Posting ${tweet}`)
       twitter.postTweet(tweet)
         .then(resp => resp.json())
         .then(json => res.send(json))
