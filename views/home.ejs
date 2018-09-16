@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <link rel="stylesheet" href="styles/home.css" type="text/css">
+    <title>nowsaying</title>
+</head>
+<body>
+<header>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="/">nowsaying</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNavDropdown">
+            <ul class="navbar-nav">
+                <li class="nav-item active">
+                    <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="<%= `https://twitter.com/${twitter_handle}` %>">Twitter</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="<%= `https://twitter.com/${owner_handle}` %>">Owner</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="https://github.com/robertsben/nowsaying">Github</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+</header>
+<main class="content-wrap">
+<div class="container">
+<div class="row">
+    <div class="col-md-6 mb-3">
+        <div class="card">
+            <h5 class="card-header bg-primary text-white">Now Singing</h5>
+            <div class="card-body">
+                <h5 class="card-title">Lyrics</h5>
+                <h6 class="card-subtitle mb-2 text-muted"><%= `${songdetails.song} // ${songdetails.artist}` %></h6>
+                <p id="selected-lyrics" class="card-text" style="white-space: pre-line;"><%- lyrics %></p>
+                <a href="/" role="button" class="btn btn-light card-link">Refresh</a>
+                <button type="button" class="btn btn-primary card-link" onclick="tweetCurrent()">Tweet</button>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 mb-3">
+        <div class="card">
+            <h5 class="card-header bg-success text-white">Now Playing</h5>
+            <div class="card-body">
+                <h5 class="card-title"><%= songdetails.song %></h5>
+                <h6 class="card-subtitle mb-2 text-muted"><%= songdetails.artist %></h6>
+                <p class="card-text">
+                    Album:  <strong><%= songdetails.album.name %></strong></br>
+                    Released: <strong><%= songdetails.album.release_date %></strong></br>
+                    Length: <strong><%= songdetails.length %></strong></br>
+                    Track No.: <strong><%= songdetails.track_no %></strong></br>
+                </p>
+                <a href="/" role="button" class="btn btn-light card-link">Refresh</a>
+                <a href="<%= songdetails.url %>" role="button" class="btn btn-primary card-link">Spotify</a>
+            </div>
+            <img class="card-img-bottom" src="<%- songdetails.art %>" alt="Album art" width="100%" height="100%">
+        </div>
+    </div>
+</div>
+</div>
+</main>
+<script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+<script>
+function tweetCurrent() {
+  $.post(
+    '/tweet',
+    {tweet: `<%- lyrics %>`},
+    (data) => {
+      alert(`Successfully posted to @${data.user.screen_name}`);
+    },
+    'json'
+  ).fail(
+    (data) => {
+      alert(`Failed to post: ${data.responseText}`);
+    }
+  );
+}
+</script>
+</body>
+</html>

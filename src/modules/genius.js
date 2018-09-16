@@ -46,13 +46,18 @@ const getLyrics = (lyrics_url) => {
 }
 
 const getLyricSnippet = (title) => {
+  return getLyricsFull(title)
+    .then(lyrics.chooseRandomSnippet)
+}
+
+const getLyricsFull = (title) => {
   return getSongUrl(title)
     .then(getSongLyricsUrl)
     .then(getLyrics)
     .then(lyrics.cleanLyrics)
-    .then(lyrics.chooseRandomSnippet)
 }
 
 module.exports = {
+  getLyricsFull: getLyricsFull,
   getLyricSnippet: getLyricSnippet
 }
