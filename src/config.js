@@ -1,4 +1,6 @@
 module.exports = {
+  TWEET_AUTH_USER: process.env.TWEET_AUTH_USER,
+  TWEET_AUTH_PASS: process.env.TWEET_AUTH_PASS,
   OWNER_HANDLE: process.env.OWNER_HANDLE,
   TWITTER_HANDLE: process.env.TWITTER_HANDLE,
   SPOTIFY_CLIENT_ID: process.env.SPOTIFY_CLIENT_ID,

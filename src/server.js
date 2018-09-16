@@ -1,25 +1,48 @@
 const path = require('path');
 const express = require('express');
+const bodyParser = require('body-parser');
+const multer = require('multer');
+const auth = require('basic-auth');
+const compare = require('tsscmp');
 const url = require('url');
 const spotify = require('./modules/spotify');
+const twitter = require('./modules/twitter');
 const nowsaying = require('./modules/nowsaying');
 const config = require('./config');
 const app = express();
 
+// @see: https://github.com/jshttp/basic-auth
+const check = (user, pass) => {
+  var valid = true
+  // Simple method to prevent short-circut and use timing-safe compare
+  valid = compare(user, config.TWEET_AUTH_USER) && valid
+  valid = compare(pass, config.TWEET_AUTH_PASS) && valid
+
+  return valid
+}
+
 app.set('view engine', 'ejs');
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, '..', 'public')));
+
+let currentTweet;
 
 app.get('/', (req, res) => {
   let details;
   nowsaying.getNowPlayingDetails()
     .then(songArtist => { details = songArtist; return details; })
     .then(nowsaying.getLyricsFromSongArtist)
-    .then(lyrics => res.render('home', {
-      owner_handle: config.OWNER_HANDLE,
-      twitter_handle: config.TWITTER_HANDLE,
-      lyrics: lyrics,
-      songdetails: details
-    }));
+    .then(lyrics => {
+      currentTweet = lyrics;
+      res.render('home', {
+        owner_handle: config.OWNER_HANDLE,
+        twitter_handle: config.TWITTER_HANDLE,
+        lyrics: lyrics,
+        songdetails: details,
+        auth: config.TWEET_AUTH_USER
+      })
+    });
 })
 
 app.get('/login', (req, res) => {
@@ -57,10 +80,22 @@ app.get('/nowplaying', (req, res) => {
     .then((nowPlaying) => res.send(nowPlaying))
 })
 
-app.get('/tweet', (req, res) => {
-  nowsaying.tweetNowPlaying()
-    .then(resp => resp.json())
-    .then(json => res.send(json))
-})
+app.route('/tweet')
+  .get((req, res) => {
+    nowsaying.tweetNowPlaying()
+      .then(resp => resp.json())
+      .then(json => res.send(json))
+  })
+  .post((req, res) => {
+    const credentials = auth(req);
+    if (!credentials || !check(credentials.name, credentials.pass)) {
+      res.status(401).send('Access denied')
+    } else {
+      const tweet = req.body.tweet;
+      twitter.postTweet(tweet)
+        .then(resp => resp.json())
+        .then(json => res.send(json))
+    }
+  })
 
 app.listen(process.env.PORT, console.log(`Listening on port ${process.env.PORT}`));
