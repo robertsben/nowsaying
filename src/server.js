@@ -1,3 +1,4 @@
+const path = require('path');
 const express = require('express');
 const url = require('url');
 const spotify = require('./modules/spotify');
@@ -6,10 +7,11 @@ const config = require('./config');
 const app = express();
 
 app.set('view engine', 'ejs');
+app.use(express.static(path.join(__dirname, '..', 'public')));
 
 app.get('/', (req, res) => {
   let details;
-  nowsaying.getNowPlayingSongArtist()
+  nowsaying.getNowPlayingDetails()
     .then(songArtist => { details = songArtist; return details; })
     .then(nowsaying.getLyricsFromSongArtist)
     .then(lyrics => res.render('home', {

@@ -8,5 +8,6 @@ services:
     volumes:
       - ./src:/src/app/src
       - ./views:/src/app/views
+      - ./public:/src/app/public
     env_file:
       - .env-dev
