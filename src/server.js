@@ -31,9 +31,31 @@ app.get('/', (req, res) => {
         owner_handle: config.OWNER_HANDLE,
         twitter_handle: config.TWITTER_HANDLE,
         lyrics: lyrics,
-        songdetails: details,
-        auth: config.TWEET_AUTH_USER
+        playing: true,
+        songdetails: details
       })
+    })
+    .catch(reason => {
+      if (reason == 'nothing playing') {
+        res.render('home', {
+          owner_handle: config.OWNER_HANDLE,
+          twitter_handle: config.TWITTER_HANDLE,
+          lyrics: 'N/A',
+          playing: false,
+          songdetails: {
+            song: 'N/A (nothing currently playing)',
+            artist: 'N/A',
+            album: {
+              name: 'N/A',
+              release_date: 'N/A'
+            },
+            art: '',
+            track_no: 'N/A',
+            length: 'N/A',
+            url: 'https://open.spotify.com'
+          }
+        });
+      }
     });
 })
 

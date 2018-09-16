@@ -54,6 +54,12 @@ const getNowPlaying = () => {
     .then((resp) => resp.json())
     .then((resp_json) => resp_json['access_token'])
     .then(requestNowPlaying)
+    .then(resp => {
+      if (resp.status === 204) {
+        throw 'nothing playing';
+      }
+      return resp;
+    })
     .then((resp) => resp.json())
 }
 

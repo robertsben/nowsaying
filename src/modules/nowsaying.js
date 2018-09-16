@@ -6,7 +6,6 @@ const pad = (num) => num < 10 ? `0${num}`: `${num}`;
 
 const getNowPlaying = () => {
   return spotify.getNowPlaying()
-    .catch((err) => res.status(500).send(`Error getting now playing: ${err}`))
 }
 
 const getNowPlayingDetails = () => {
