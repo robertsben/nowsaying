@@ -75,9 +75,14 @@
 function tweetCurrent() {
   $.post(
     '/tweet',
-    {},
+    {tweet: `<%- lyrics %>`},
     (data) => {
-      alert(`Successfully posted to @${data.user.screen_name}`)
+      alert(`Successfully posted to @${data.user.screen_name}`);
+    },
+    'json'
+  ).fail(
+    (data) => {
+      alert(`Failed to post: ${data.responseText}`);
     }
   );
 }

@@ -43,6 +43,10 @@ const getLyricsFromSongArtist = (info) => {
   return genius.getLyricSnippet(`${info.song} ${info.artist}`);
 }
 
+const getFullLyricsFromSongArtist = (info) => {
+  return genius.getLyricsFull(`${info.song} ${info.artist}`);
+}
+
 const getLyricsFromNowPlaying = () => {
   return getNowPlaying()
     .then((nowPlaying) => {
@@ -69,5 +73,6 @@ module.exports = {
   getNowPlayingDetails: getNowPlayingDetails,
   getLyricsFromNowPlaying: getLyricsFromNowPlaying,
   getLyricsFromSongArtist: getLyricsFromSongArtist,
+  getFullLyricsFromSongArtist: getFullLyricsFromSongArtist,
   tweetNowPlaying: tweetNowPlaying
 }

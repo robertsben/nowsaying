@@ -4,23 +4,29 @@ const bodyParser = require('body-parser');
 const url = require('url');
 const spotify = require('./modules/spotify');
 const twitter = require('./modules/twitter');
+const lyrics = require('./modules/lyrics');
 const nowsaying = require('./modules/nowsaying');
 const config = require('./config');
 const app = express();
 
 app.set('view engine', 'ejs');
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: true}));
 app.use(express.static(path.join(__dirname, '..', 'public')));
 
-let currentTweet;
+let currentLyrics;
 
 app.get('/', (req, res) => {
   let details;
   nowsaying.getNowPlayingDetails()
     .then(songArtist => { details = songArtist; return details; })
-    .then(nowsaying.getLyricsFromSongArtist)
+    .then(nowsaying.getFullLyricsFromSongArtist)
+    .then(fullLyrics => {
+      currentLyrics = fullLyrics;
+      return fullLyrics;
+    })
+    .then(lyrics.chooseRandomSnippet)
     .then(lyrics => {
-      currentTweet = lyrics;
       res.render('home', {
         owner_handle: config.OWNER_HANDLE,
         twitter_handle: config.TWITTER_HANDLE,
@@ -73,17 +79,23 @@ app.route('/tweet')
       .then(json => res.send(json))
   })
   .post((req, res) => {
-    if (!currentTweet) {
+    const tweet = req.body.tweet;
+
+    if (!currentLyrics) {
       res.status(400).send('No lyrics selected')
-    } else {
-      // it's a dirty, dirty hack, but I'm not implementing a login for this
-      const tweet = currentTweet;
-      currentTweet = undefined;
-      console.log(`Posting ${tweet}`)
-      twitter.postTweet(tweet)
-        .then(resp => resp.json())
-        .then(json => res.send(json))
+      return;
     }
+
+    // it's a dirty, dirty hack, but I'm not implementing a login for this
+    if (!currentLyrics.includes(tweet)) {
+      res.status(400).send('Selected lyrics not from currently playing song')
+      return;
+    }
+
+    console.log(`Posting ${tweet}`)
+    twitter.postTweet(tweet)
+      .then(resp => resp.json())
+      .then(json => res.send(json))
   })
 
 app.listen(process.env.PORT, console.log(`Listening on port ${process.env.PORT}`));
