@@ -42,18 +42,6 @@ app.get('/', (req, res) => {
           twitter_handle: config.TWITTER_HANDLE,
           lyrics: 'N/A',
           playing: false,
-          songdetails: {
-            song: 'N/A (nothing currently playing)',
-            artist: 'N/A',
-            album: {
-              name: 'N/A',
-              release_date: 'N/A'
-            },
-            art: '',
-            track_no: 'N/A',
-            length: 'N/A',
-            url: 'https://open.spotify.com'
-          }
         });
       }
     });
